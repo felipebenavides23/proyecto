@@ -23,7 +23,6 @@ public class vista {
     }
     String[] emptyData = {""};
     String[] datos = {""};
-    VISTA_PRINCIPAL vistaPrincipal = new VISTA_PRINCIPAL();
     DAOS_PERSONA daos_persona = new DAOS_PERSONA();
     DAOS_CLIENTE daos_cliente = new DAOS_CLIENTE();
     DAOS_AUTO daos_auto = new DAOS_AUTO();
@@ -41,7 +40,7 @@ public class vista {
         limpiarvista();
         switch (estado) {
             case "login":
-                vista_p();
+                login();
                 break;
             case "listar citas":
                 vista_listar_citas(data);
@@ -62,8 +61,82 @@ public class vista {
         llenarcampo();
     }
 
-    public void vista_p() {
-        vistaPrincipal.VISTAP();
+    public void login() {
+
+        mf.add(panel1);
+
+        //tittulo
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        Label labtitulo = new Label("LOGIN", Label.CENTER);
+        gridbag.setConstraints(labtitulo, gbc);
+        panel1.add(labtitulo);
+
+
+        // formulario de inicio de sesion
+        //relleno en X
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1.0;
+        // crecion de caja de texto
+        TextField t1, t2;
+        // caja de texto 1 "ususario"
+        Label lab_usuario = new Label("Usuario");
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gridbag.setConstraints(lab_usuario, gbc);
+        panel1.add(lab_usuario);
+
+        t1 = new TextField();
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gridbag.setConstraints(t1, gbc);
+        panel1.add(t1);
+
+        // caja de texto 2 "ususario"
+        Label lab_contraseña = new Label("Contraseña");
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gridbag.setConstraints(lab_contraseña, gbc);
+        panel1.add(lab_contraseña);
+
+        t2 = new TextField();
+        t2.isVisible();
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gridbag.setConstraints(t2, gbc);
+        panel1.add(t2);
+
+        Button bo_inicio_sesion = new Button("Iniciar Sesion");
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.gridwidth = GridBagConstraints.BOTH;
+        gridbag.setConstraints(bo_inicio_sesion, gbc);
+
+        bo_inicio_sesion.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    if (daos_persona.vericar_datos_corre(t1, t2)) {
+                        String[] data = daos_citas.lista_citas();
+                        render("listar citas", datos, data);
+                    } else {
+                        avisos("los datos estan mal ");
+                    }
+                } catch (FileNotFoundException fileNotFoundException) {
+                    fileNotFoundException.printStackTrace();
+                }
+
+            }
+        });
+
+        panel1.add(bo_inicio_sesion);
+
+        Button bo_crear_cuenta = new Button("Crear Cuenta");
+        gbc.fill = GridBagConstraints.NONE;
+        //gbc.gridwidth = GridBagConstraints.RELATIVE;
+        gridbag.setConstraints(bo_crear_cuenta, gbc);
+
+        bo_crear_cuenta.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                render("crear_sesion", datos, emptyData);
+            }
+        });
+        panel1.add(bo_crear_cuenta);
     }
 
 
@@ -74,7 +147,7 @@ public class vista {
         gridbag.setConstraints(lab_crear_sesion, gbc);
         panel1.add(lab_crear_sesion);
 
-        gbc.gridwidth = GridBagConstraints.BOTH;
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
         Label lab_nombre = new Label("Nombre");
         gridbag.setConstraints(lab_nombre, gbc);
         panel1.add(lab_nombre);
@@ -84,7 +157,7 @@ public class vista {
         gridbag.setConstraints(textbnox_nombre, gbc);
         panel1.add(textbnox_nombre);
 
-        gbc.gridwidth = GridBagConstraints.BOTH;
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
         Label lab_apellido = new Label("Apellido");
         gridbag.setConstraints(lab_apellido, gbc);
         panel1.add(lab_apellido);
@@ -94,7 +167,7 @@ public class vista {
         gridbag.setConstraints(textbnox_apellido, gbc);
         panel1.add(textbnox_apellido);
 
-        gbc.gridwidth = GridBagConstraints.BOTH;
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
         Label lab_correo = new Label("Correo");
         gridbag.setConstraints(lab_correo, gbc);
         panel1.add(lab_correo);
@@ -104,7 +177,7 @@ public class vista {
         gridbag.setConstraints(textbnox_correo, gbc);
         panel1.add(textbnox_correo);
 
-        gbc.gridwidth = GridBagConstraints.BOTH;
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
         Label lab_contra = new Label("Contraseña");
         gridbag.setConstraints(lab_contra, gbc);
         panel1.add(lab_contra);
@@ -114,7 +187,7 @@ public class vista {
         gridbag.setConstraints(textbnox_contra, gbc);
         panel1.add(textbnox_contra);
 
-        gbc.gridwidth = GridBagConstraints.RELATIVE;
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
         Label lab_contra_confi = new Label("Confirmar Contraseña");
         gridbag.setConstraints(lab_contra_confi, gbc);
         panel1.add(lab_contra_confi);
@@ -244,7 +317,7 @@ public class vista {
         gridbag.setConstraints(lab_citas, gbc);
         panel1.add(lab_citas);
 
-        gbc.gridwidth = GridBagConstraints.RELATIVE;
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
         Label lab_fecha = new Label("Fecha De La Cita");
         gridbag.setConstraints(lab_fecha, gbc);
         panel1.add(lab_fecha);
@@ -256,7 +329,7 @@ public class vista {
         gridbag.setConstraints(calendario, gbc);
         panel1.add(calendario);
 
-        gbc.gridwidth = GridBagConstraints.BOTH;
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
         Label lab_placa_cita = new Label("Placa");
         gridbag.setConstraints(lab_placa_cita, gbc);
         panel1.add(lab_placa_cita);
@@ -272,7 +345,7 @@ public class vista {
         gridbag.setConstraints(lista_placas, gbc);
         panel1.add(lista_placas);
 
-        gbc.gridwidth = GridBagConstraints.BOTH;
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
         Label lab_motivo = new Label("Motivo");
         gridbag.setConstraints(lab_motivo, gbc);
         panel1.add(lab_motivo);
@@ -332,7 +405,7 @@ public class vista {
         gridbag.setConstraints(lab_cliente, gbc);
         panel_i1.add(lab_cliente);
 
-        gbc.gridwidth = GridBagConstraints.BOTH;
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
         Label lab_nombre_cli = new Label("Nombre");
         gridbag.setConstraints(lab_nombre_cli, gbc);
         panel_i1.add(lab_nombre_cli);
@@ -342,7 +415,7 @@ public class vista {
         gridbag.setConstraints(text_nombre_cli, gbc);
         panel_i1.add(text_nombre_cli);
 
-        gbc.gridwidth = GridBagConstraints.BOTH;
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
         Label lab_apellido_cli = new Label("Apelldios");
         gridbag.setConstraints(lab_apellido_cli, gbc);
         panel_i1.add(lab_apellido_cli);
@@ -352,7 +425,7 @@ public class vista {
         gridbag.setConstraints(text_apellido_cli, gbc);
         panel_i1.add(text_apellido_cli);
 
-        gbc.gridwidth = GridBagConstraints.BOTH;
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
         Label lab_documento_cli = new Label("Documento");
         gridbag.setConstraints(lab_documento_cli, gbc);
         panel_i1.add(lab_documento_cli);
@@ -362,7 +435,7 @@ public class vista {
         gridbag.setConstraints(text_documento_cli, gbc);
         panel_i1.add(text_documento_cli);
 
-        gbc.gridwidth = GridBagConstraints.BOTH;
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
         Label lab_correo_cli = new Label("Correo");
         gridbag.setConstraints(lab_correo_cli, gbc);
         panel_i1.add(lab_correo_cli);
@@ -429,7 +502,7 @@ public class vista {
         gridbag.setConstraints(lab_autos, gbc);
         panel_i1.add(lab_autos);
 
-        gbc.gridwidth = GridBagConstraints.BOTH;
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
         Label lab_dueños = new Label("Dueños");
         gridbag.setConstraints(lab_dueños, gbc);
         panel_i1.add(lab_dueños);
@@ -444,7 +517,7 @@ public class vista {
         gridbag.setConstraints(lista_dueños, gbc);
         panel_i1.add(lista_dueños);
 
-        gbc.gridwidth = GridBagConstraints.BOTH;
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
         Label lab_tipo = new Label("Tipo De Vehiculo");
         gridbag.setConstraints(lab_tipo, gbc);
         panel_i1.add(lab_tipo);
@@ -463,7 +536,7 @@ public class vista {
         gridbag.setConstraints(lista_tipo, gbc);
         panel_i1.add(lista_tipo);
 
-        gbc.gridwidth = GridBagConstraints.BOTH;
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
         Label lab_placas = new Label("Placas");
         gridbag.setConstraints(lab_placas, gbc);
         panel_i1.add(lab_placas);
@@ -473,7 +546,7 @@ public class vista {
         gridbag.setConstraints(text_placas, gbc);
         panel_i1.add(text_placas);
 
-        gbc.gridwidth = GridBagConstraints.BOTH;
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
         Label lab_modelo = new Label("Modelo");
         gridbag.setConstraints(lab_modelo, gbc);
         panel_i1.add(lab_modelo);
