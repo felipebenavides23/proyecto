@@ -722,7 +722,13 @@ public class vista {
             avisos(" el documento ya existe ");
         } else {
             daos_cliente.crear_cliente(daos_cliente.gestionar_persona(nombre, apellido, documento, correo));
-            render("listar citas", datos, emptyData);
+            String[] data = new String[0];
+            try {
+                datos = daos_citas.lista_citas();
+            } catch (FileNotFoundException fileNotFoundException) {
+                fileNotFoundException.printStackTrace();
+            }
+            render("listar citas", emptyData, datos);
             avisos("se registro el cliente de forma exitosa ");
         }
     }
@@ -747,7 +753,13 @@ public class vista {
             avisos("falta seleccionar el dueño");
         } else {
             daos_auto.crear_auto(daos_auto.gestionar_auto(tipo, marca, modelo, color, cilin, placa, dueno));
-            render("listar citas", datos, emptyData);
+            String[] data = new String[0];
+            try {
+                datos = daos_citas.lista_citas();
+            } catch (FileNotFoundException fileNotFoundException) {
+                fileNotFoundException.printStackTrace();
+            }
+            render("listar citas", emptyData, datos);
             avisos("se registro exitosamente el vehiculo");
         }
     }
