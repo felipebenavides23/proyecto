@@ -284,7 +284,13 @@ public class vista {
         bo_ingresar_cliente.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                    render("crear cliente", datos, emptyData);
+                try {
+                    String [] data= daos_cliente.lista_clientes();
+                    render("crear cliente", datos, data);
+                } catch (FileNotFoundException fileNotFoundException) {
+                    fileNotFoundException.printStackTrace();
+                }
+
 
             }
         });

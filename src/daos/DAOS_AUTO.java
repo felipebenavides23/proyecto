@@ -68,7 +68,7 @@ public class DAOS_AUTO {
         info_auto.setModelo(ruedas.getText());
         info_auto.setColor(puertas.getText());
         info_auto.setCilindraje(cilin.getText());
-        info_auto.setPlaca(cilin.getText());
+        info_auto.setPlaca(placas.getText());
         info_auto.setDueno(dueño.getItem(dueño.getSelectedIndex()));
 
         return  info_auto;
