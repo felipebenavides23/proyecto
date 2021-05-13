@@ -779,7 +779,6 @@ public class vista {
         } else {
             daos_citas.crear_cita(daos_citas.gestionar_citas(fecha_c, placa, motivo));
             avisos("la cita se registro con exito");
-
             String[] data = new String[0];
             try {
                 datos = daos_citas.lista_citas();
