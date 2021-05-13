@@ -6,12 +6,16 @@ import daos.DAOS_CITAS;
 import daos.DAOS_CLIENTE;
 import daos.DAOS_PERSONA;
 
+import controladores.controlador_cliente;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.io.FileNotFoundException;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class vista {
@@ -21,12 +25,14 @@ public class vista {
     public static void main(String args[]) throws FileNotFoundException {
         new vista().run();
     }
+
     String[] emptyData = {""};
     String[] datos = {""};
     DAOS_PERSONA daos_persona = new DAOS_PERSONA();
     DAOS_CLIENTE daos_cliente = new DAOS_CLIENTE();
     DAOS_AUTO daos_auto = new DAOS_AUTO();
     DAOS_CITAS daos_citas = new DAOS_CITAS();
+    controlador_cliente con_clientes = new controlador_cliente();
     Frame mf = new Frame("proyecto jordi");
     Panel panel1 = new Panel();
     GridBagLayout gridbag = new GridBagLayout();
@@ -207,8 +213,12 @@ public class vista {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (daos_persona.verificar_bd()) {
-                    verificacion_usuario(textbnox_nombre, textbnox_apellido, textbnox_correo, textbnox_contra, textbnox_contra_confi);
-                } else {
+                    try {
+                        daos_persona.iniiciarpersonas();
+                        verificacion_usuario(textbnox_nombre, textbnox_apellido, textbnox_correo, textbnox_contra, textbnox_contra_confi);
+                    } catch (FileNotFoundException fileNotFoundException) {
+                        fileNotFoundException.printStackTrace();
+                    }
                 }
             }
         });
@@ -257,6 +267,7 @@ public class vista {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
+
                     String[] data = daos_auto.listar_placas();
                     render("crear cita", datos, data);
                 } catch (FileNotFoundException fileNotFoundException) {
@@ -273,12 +284,7 @@ public class vista {
         bo_ingresar_cliente.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
-                    String[] data = daos_cliente.lista_clientes();
-                    render("crear cliente", datos, data);
-                } catch (FileNotFoundException fileNotFoundException) {
-                    fileNotFoundException.printStackTrace();
-                }
+                    render("crear cliente", datos, emptyData);
 
             }
         });
@@ -292,6 +298,7 @@ public class vista {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
+                    daos_auto.iniciarautos();
                     String[] datos = daos_cliente.lista_documento();
                     String[] data = daos_auto.listar_autos();
                     render("ingresar auto", datos, data);
@@ -380,7 +387,15 @@ public class vista {
         bo_atras.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                render("listar citas", datos, emptyData);
+
+                String[] data = new String[0];
+                try {
+                    datos = daos_citas.lista_citas();
+                } catch (FileNotFoundException fileNotFoundException) {
+                    fileNotFoundException.printStackTrace();
+                }
+                render("listar citas", emptyData, datos);
+
             }
         });
         panel1.add(bo_atras);
@@ -454,6 +469,7 @@ public class vista {
             public void actionPerformed(ActionEvent e) {
                 if (daos_cliente.verificar_bd_clientes()) {
                     try {
+                        daos_cliente.iniciarcliente();
                         verificar_cliente(text_nombre_cli, text_apellido_cli, text_documento_cli, text_correo_cli);
                     } catch (FileNotFoundException fileNotFoundException) {
                         fileNotFoundException.printStackTrace();
@@ -503,21 +519,6 @@ public class vista {
         panel_i1.add(lab_autos);
 
         gbc.gridwidth = GridBagConstraints.REMAINDER;
-        Label lab_dueños = new Label("Dueños");
-        gridbag.setConstraints(lab_dueños, gbc);
-        panel_i1.add(lab_dueños);
-
-        gbc.gridwidth = GridBagConstraints.REMAINDER;
-        Choice lista_dueños = new Choice();
-        int n = data.length;
-        int i;
-        for (i = 0; i < n; i++) {
-            lista_dueños.add(String.valueOf(data[i]));
-        }
-        gridbag.setConstraints(lista_dueños, gbc);
-        panel_i1.add(lista_dueños);
-
-        gbc.gridwidth = GridBagConstraints.REMAINDER;
         Label lab_tipo = new Label("Tipo De Vehiculo");
         gridbag.setConstraints(lab_tipo, gbc);
         panel_i1.add(lab_tipo);
@@ -537,6 +538,47 @@ public class vista {
         panel_i1.add(lista_tipo);
 
         gbc.gridwidth = GridBagConstraints.REMAINDER;
+        Label lab_marca = new Label("Marca");
+        gridbag.setConstraints(lab_marca, gbc);
+        panel_i1.add(lab_marca);
+
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        TextField text_marca = new TextField();
+        gridbag.setConstraints(text_marca, gbc);
+        panel_i1.add(text_marca);
+
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        Label lab_modelos = new Label(" Modelos");
+        gridbag.setConstraints(lab_modelos, gbc);
+        panel_i1.add(lab_modelos);
+
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        TextField text_modelo = new TextField();
+        gridbag.setConstraints(text_modelo, gbc);
+        panel_i1.add(text_modelo);
+
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        Label lab_color = new Label("Color del Vehiculo");
+        gridbag.setConstraints(lab_color, gbc);
+        panel_i1.add(lab_color);
+
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        TextField text_color = new TextField();
+        gridbag.setConstraints(text_color, gbc);
+        panel_i1.add(text_color);
+
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        Label lab_cilin = new Label("Cilindraje");
+        gridbag.setConstraints(lab_cilin, gbc);
+        panel_i1.add(lab_cilin);
+
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        TextField text_cilin = new TextField();
+        gridbag.setConstraints(text_cilin, gbc);
+        panel_i1.add(text_cilin);
+
+
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
         Label lab_placas = new Label("Placas");
         gridbag.setConstraints(lab_placas, gbc);
         panel_i1.add(lab_placas);
@@ -547,14 +589,19 @@ public class vista {
         panel_i1.add(text_placas);
 
         gbc.gridwidth = GridBagConstraints.REMAINDER;
-        Label lab_modelo = new Label("Modelo");
-        gridbag.setConstraints(lab_modelo, gbc);
-        panel_i1.add(lab_modelo);
+        Label lab_dueños = new Label("Dueños");
+        gridbag.setConstraints(lab_dueños, gbc);
+        panel_i1.add(lab_dueños);
 
         gbc.gridwidth = GridBagConstraints.REMAINDER;
-        TextField text_modelo = new TextField();
-        gridbag.setConstraints(text_modelo, gbc);
-        panel_i1.add(text_modelo);
+        Choice lista_dueños = new Choice();
+        int n = data.length;
+        int i;
+        for (i = 0; i < n; i++) {
+            lista_dueños.add(String.valueOf(data[i]));
+        }
+        gridbag.setConstraints(lista_dueños, gbc);
+        panel_i1.add(lista_dueños);
 
         gbc.fill = GridBagConstraints.NONE;
         gbc.gridwidth = GridBagConstraints.BOTH;
@@ -566,7 +613,8 @@ public class vista {
             public void actionPerformed(ActionEvent e) {
                 if (daos_auto.verificar_bd_auto()) {
                     try {
-                        verificar_auto(lista_dueños, lista_tipo, text_placas, text_modelo);
+                        daos_auto.iniciarautos();
+                        verificar_auto(lista_tipo, text_marca, text_modelo, text_color, text_cilin, text_placas, lista_dueños);
                     } catch (FileNotFoundException fileNotFoundException) {
                         fileNotFoundException.printStackTrace();
                     }
@@ -625,99 +673,64 @@ public class vista {
     }
 
 
-    public void verificacion_usuario(TextField nombre, TextField apellido, TextField correo, TextField contra, TextField confi) {
+    public void verificacion_usuario(TextField nombre, TextField apellido, TextField correo, TextField contra, TextField confi) throws FileNotFoundException {
         String vacio = "";
         if (vacio.equals(nombre.getText())) {
             avisos(" falta  llenar nombre");
+        } else if (vacio.equals(apellido.getText())) {
+            avisos("falta llenar el apellido");
+        } else if (vacio.equals(correo.getText())) {
+            avisos("falta llenar el correo");
+        } else if (daos_persona.verificar_correo(correo)) {
+            avisos("el correo ya existe");
+        } else if (contra.getText().equals(confi.getText())) {
+            daos_persona.crear_usuario(daos_persona.gestionar_persona(nombre, apellido, correo, contra));
+            render("crear_sesion", datos, emptyData);
+            avisos("se creo con exito el usuario");
         } else {
-            if (vacio.equals(apellido.getText())) {
-                avisos(" falta llenar apellido");
-            } else {
-                if (vacio.equals(correo.getText())) {
-                    avisos("falta llenar correo");
-                } else {
-                    try {
-                        if (daos_persona.verificar_correo(correo)) {
-                            avisos("ya existe el correo");
-                        } else {
-                            if (vacio.equals(contra.getText())) {
-                                avisos("falta llenar contraseña");
-                            } else {
-                                if (contra.getText().equals(confi.getText())) {
-                                    daos_persona.validar_id(nombre, apellido, correo, contra);
-                                    render("crear_sesion", datos, emptyData);
-                                    avisos("se creo con exito el usuario");
-                                } else {
-                                    avisos("las contraseñas no son iguales");
-                                }
-                            }
-                        }
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
+            avisos("las contraseñas no son iguales");
         }
     }
 
-
-    public void verificar_cliente(TextField nombre, TextField apelldio, TextField documento, TextField correo) throws FileNotFoundException {
+    public void verificar_cliente(TextField nombre, TextField apellido, TextField documento, TextField correo) throws FileNotFoundException {
         String vacio = "";
         if (vacio.equals(nombre.getText())) {
             avisos("nombre del cliente esta sin llenar");
+        } else if (vacio.equals(apellido.getText())) {
+            avisos("el apellido del cliente esta sin llenar ");
+        } else if (vacio.equals(documento.getText())) {
+            avisos("el documento del clienta esta sin llenar");
+        } else if (daos_cliente.verificar_documento(documento)) {
+            avisos(" el documento ya existe ");
         } else {
-            if (vacio.equals(apelldio.getText())) {
-                avisos("el apellido del cliente esta sin llenar");
-            } else {
-                if (vacio.equals(documento.getText())) {
-                    avisos("el documento esta sin llenar");
-                } else {
-                    try {
-                        if (daos_cliente.verificar_documento(documento)) {
-                            avisos("el documento ya esta registrado");
-                        } else {
-                            if (vacio.equals(correo.getText())) {
-                                avisos("el correo del cliente esta sin llenar");
-                            } else {
-                                daos_cliente.validar_id_cliente(nombre, apelldio, documento, correo);
-                                render("listar citas", datos, emptyData);
-                                avisos("se registro el cliente de forma exitosa ");
-                            }
-                        }
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
+            daos_cliente.crear_cliente(daos_cliente.gestionar_persona(nombre, apellido, documento, correo));
+            render("listar citas", datos, emptyData);
+            avisos("se registro el cliente de forma exitosa ");
         }
-
     }
 
-    public void verificar_auto(Choice dueño, Choice tipo, TextField placa, TextField modelo) throws FileNotFoundException {
+    public void verificar_auto(Choice tipo, TextField marca, TextField modelo, TextField color, TextField cilin, TextField placa, Choice dueno) throws FileNotFoundException {
         String vacio = "";
-        if (vacio.equals(dueño.getItem(dueño.getSelectedIndex()))) {
-            avisos("no selecciono dueño");
+        if (vacio.equals(tipo.getItem(tipo.getSelectedIndex()))) {
+            avisos("no selecciono el tipo de vehiculo");
+        } else if (vacio.equals(marca.getText())) {
+            avisos("falta llenar la marca");
+        } else if (vacio.equals(modelo.getText())) {
+            avisos("falta llenar el modelo");
+        } else if (vacio.equals(color.getText())) {
+            avisos("falta llenar el color");
+        } else if (vacio.equals(cilin.getText())) {
+            avisos("falta llenar el cilindraje");
+        } else if (vacio.equals(placa.getText())) {
+            avisos("falta llenar la placa ");
+        } else if (daos_auto.verificar_placas(placa)) {
+            avisos("la placa ya existe");
+        } else if (vacio.equals(dueno.getItem(dueno.getSelectedIndex()))) {
+            avisos("falta seleccionar el dueño");
         } else {
-            if (vacio.equals(tipo.getItem(tipo.getSelectedIndex()))) {
-                avisos("no seleciono tipo de vehivulo");
-
-            } else {
-                if (vacio.equals(placa.getText())) {
-                    avisos("la clase esta sin llenar");
-                } else {
-                    if (daos_auto.verificar_placas(placa)) {
-                        avisos("la placa ya existe");
-                    } else {
-                        if (vacio.equals(modelo.getText())) {
-                            avisos("el modelo esta sin llenar ");
-                        } else {
-                            daos_auto.validar_id_auto(dueño, tipo, placa, modelo);
-                            render("listar citas", datos, emptyData);
-                            avisos("se registro exitosamente el vehiculo");
-                        }
-                    }
-                }
-            }
+            daos_auto.crear_auto(daos_auto.gestionar_auto(tipo, marca, modelo, color, cilin, placa, dueno));
+            render("listar citas", datos, emptyData);
+            avisos("se registro exitosamente el vehiculo");
         }
     }
 
@@ -727,26 +740,25 @@ public class vista {
         String vacio = "";
         if (fecha_c.getDate() == null) {
             avisos("seleccione fecha para la cita");
+        } else if (Fecha_actual.getTime() > fecha_m.getTime()) {
+            avisos("la fecha no es valida");
+        } else if (vacio.equals(placa.getItem(placa.getSelectedIndex()))) {
+            avisos("seleccione una placa");
+        } else if (vacio.equals(motivo.getText())) {
+            avisos("falta lleanr el motivo");
         } else {
-            if (Fecha_actual.getTime() > fecha_m.getTime()) {
-                avisos("la fecha no es correcta");
-            } else {
-                if (vacio.equals(placa.getItem(placa.getSelectedIndex()))) {
-                    avisos("seleccione una placa");
-                } else {
-                    if (vacio.equals(motivo.getText())) {
-                        avisos("falta lleanr el motivo");
-                    } else {
-                        daos_citas.validar_id_cita(fecha_c, placa, motivo);
-                        avisos("la cita se registro con exito");
-                        render("listar citas", datos, emptyData);
-                    }
-                }
+            daos_citas.crear_cita(daos_citas.gestionar_citas(fecha_c, placa, motivo));
+            avisos("la cita se registro con exito");
+
+            String[] data = new String[0];
+            try {
+                datos = daos_citas.lista_citas();
+            } catch (FileNotFoundException fileNotFoundException) {
+                fileNotFoundException.printStackTrace();
             }
+            render("listar citas", emptyData, datos);
+
         }
-
     }
-
-
 }
 

@@ -2,61 +2,90 @@ package daos;
 
 import java.awt.*;
 import java.io.*;
-import java.util.Scanner;
+
+import modelos.modelo_informacion_vehiculo;
+
+import controladores.controlador_auto;
 
 public class DAOS_AUTO {
+
+    modelo_informacion_vehiculo info_auto;
+    controlador_auto con_aut;
     File bd_auto = new File("bd/autos.txt");
+
+
 
     public boolean verificar_bd_auto() {
         try {
             if (bd_auto.exists()) {
+                con_aut = new controlador_auto();
+                return true;
             } else {
                 bd_auto.createNewFile();
                 verificar_bd_auto();
-                return true;
-            }
-        } catch (Exception ex) {
-        }
-        return true;
-    }
-
-    public boolean verificar_placas(TextField placa) throws FileNotFoundException {
-        BufferedReader leer = new BufferedReader(new FileReader("bd/autos.txt"));
-        Scanner entrada = new Scanner(new File("bd/autos.txt"));
-        String linea = "";
-        try {
-            while ((linea = leer.readLine()) != null) {
-                String id_auto = entrada.next();
-                String dueño_auto = entrada.next();
-                String placa_auto = entrada.next();
-                String modelo_auto = entrada.next();
-
-                if (dueño_auto.equals(placa.getText())) {
-                    return true;
-                }
             }
         } catch (Exception ex) {
         }
         return false;
     }
 
-    public void validar_id_auto(Choice dueño, Choice tipo, TextField placas, TextField modelo) throws FileNotFoundException {
+    public void  iniciarautos() throws FileNotFoundException {
         BufferedReader leer = new BufferedReader(new FileReader("bd/autos.txt"));
         String linea = "";
+        if (con_aut != null) con_aut.eliminar();
+
         try {
-            int conteo = 1;
-            while ((linea = leer.readLine()) != null) {
-                conteo = conteo + 1;
+            while((linea = leer . readLine()) != null){
+                info_auto = new modelo_informacion_vehiculo();
+                String [] data = linea.split(";");
+                info_auto.setId(Integer.parseInt(data[0]));
+                info_auto.setTipo_vehiculo(data[1]);
+                info_auto.setMarca(data[2]);
+                info_auto.setModelo(data[3]);
+                info_auto.setColor(data[4]);
+                info_auto.setCilindraje(data[5]);
+                info_auto.setPlaca(data[6]);
+                info_auto.setDueno(data[7]);
+
+                con_aut.agregar_vehiculo(info_auto);
             }
-            crear_auto(conteo, dueño, tipo, placas, modelo);
-        } catch (Exception ex) {
+        }catch (Exception ex){
+            System.out.println(ex);
         }
     }
 
-    public void crear_auto(int id, Choice dueño, Choice tipo, TextField placas, TextField modelo) {
+    public boolean verificar_placas(TextField placa) throws FileNotFoundException {
+       return con_aut.confirmar_placas(placa);
+    }
+
+    public modelo_informacion_vehiculo gestionar_auto (Choice tipo,TextField modelo,TextField ruedas,TextField puertas, TextField cilin, TextField placas, Choice dueño){
+
+        int id = con_aut.conteo() +1;
+        info_auto = new modelo_informacion_vehiculo();
+        info_auto.setId(id);
+        info_auto.setTipo_vehiculo(tipo.getItem(tipo.getSelectedIndex()));
+        info_auto.setMarca(modelo.getText());
+        info_auto.setModelo(ruedas.getText());
+        info_auto.setColor(puertas.getText());
+        info_auto.setCilindraje(cilin.getText());
+        info_auto.setPlaca(cilin.getText());
+        info_auto.setDueno(dueño.getItem(dueño.getSelectedIndex()));
+
+        return  info_auto;
+
+    }
+
+    public void crear_auto(modelo_informacion_vehiculo info_auto) {
         try {
             BufferedWriter escribir_usuario = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(bd_auto, true)));
-            escribir_usuario.write(id + "    " + dueño.getItem(dueño.getSelectedIndex()) + "    " + tipo.getItem(tipo.getSelectedIndex()) + "    " + placas.getText() + "     " + modelo.getText());
+            escribir_usuario.write(info_auto.getId() + ";"
+                    + info_auto.getTipo_vehiculo() + ";"
+                    + info_auto.getMarca() + ";"
+                    + info_auto.getModelo() + ";"
+                    + info_auto.getColor() + ";"
+                    + info_auto.getCilindraje() + ";"
+                    + info_auto.getPlaca() +  ";"
+                    + info_auto.getDueno());
             escribir_usuario.write("\n");
             escribir_usuario.close();
         } catch (Exception ex) {
@@ -65,28 +94,16 @@ public class DAOS_AUTO {
     }
 
     public String[] listar_placas() throws FileNotFoundException {
-        BufferedReader leer = new BufferedReader(new FileReader("bd/autos.txt"));
-        Scanner entrada = new Scanner(new File("bd/autos.txt"));
-        String linea = "";
-        int conteo = 1;
+        verificar_bd_auto();
+        iniciarautos();
+        int conteo = con_aut.conteo() + 1;
         int i;
-        try {
-            while ((linea = leer.readLine()) != null) {
-                conteo = conteo + 1;
-            }
-        } catch (Exception ex) {
-            System.out.println(ex);
-        }
         String[] lista_placas = new String[conteo];
         lista_placas[0] = "";
         try {
-            for (i = 1; i <= conteo; i++) {
-                String id_auto = entrada.next();
-                String dueño_auto = entrada.next();
-                String tipo_auto = entrada.next();
-                String placa_auto = entrada.next();
-                String modelo_auto = entrada.next();
-                lista_placas[i] = placa_auto;
+            for (i = 0; i <= conteo; i++) {
+                String placa_auto = con_aut.getVehiculos().get(i).getPlaca();
+                lista_placas[i+1] = placa_auto;
             }
         } catch (Exception ex) {
             System.out.println(ex);
@@ -95,29 +112,22 @@ public class DAOS_AUTO {
     }
 
     public String[] listar_autos() throws FileNotFoundException {
-        BufferedReader leer = new BufferedReader(new FileReader("bd/autos.txt"));
-        Scanner entrada = new Scanner(new File("bd/autos.txt"));
-        String linea = "";
-        int conteo = 1;
+        verificar_bd_auto();
+        iniciarautos();
+        int conteo = con_aut.conteo() + 1;
         int i;
-        try {
-            while ((linea = leer.readLine()) != null) {
-                conteo = conteo + 1;
-            }
-        } catch (Exception ex) {
-            System.out.println(ex);
-        }
         String[] lista_autos = new String[conteo];
-        lista_autos[0] = "id              doc_dueño              tipo auto              placa              modelo";
-
+        lista_autos[0] = "tipo vehiculo - marca - modelo - color - cilindraje - placa - dueño";
         try {
-            for (i = 1; i <= conteo; i++) {
-                String id_auto = entrada.next();
-                String dueño_auto = entrada.next();
-                String tipo_auto = entrada.next();
-                String placa_auto = entrada.next();
-                String modelo_auto = entrada.next();
-                lista_autos[i] = id_auto + "              " + dueño_auto + "              " + tipo_auto + "              " + placa_auto + "              " + modelo_auto;
+            for (i = 0; i <= conteo; i++) {
+                String tipo_vehiculo = con_aut.getVehiculos().get(i).getTipo_vehiculo();
+                String marca = con_aut.getVehiculos().get(i).getMarca();
+                String modelo = con_aut.getVehiculos().get(i).getModelo();
+                String color = con_aut.getVehiculos().get(i).getColor();
+                String cilin = con_aut.getVehiculos().get(i).getCilindraje();
+                String placa = con_aut.getVehiculos().get(i).getPlaca();
+                String dueno = con_aut.getVehiculos().get(i).getDueno();
+                lista_autos[i + 1] = tipo_vehiculo + " - " + marca + " - " + modelo + " - " + color + " - " + cilin + " - " + placa + " - " + dueno;
             }
         } catch (Exception ex) {
             System.out.println(ex);

@@ -1,7 +1,8 @@
 package modelos;
 
 public class modelo_persona {
-    private String nombre,apelldio,correo,contrasena;
+
+    private String nombre,apellido,correo,contrasena;
     private int id;
 
     public int getId() {
@@ -20,12 +21,12 @@ public class modelo_persona {
         this.nombre = nombre;
     }
 
-    public String getApelldio() {
-        return apelldio;
+    public String getApellido() {
+        return apellido;
     }
 
-    public void setApelldio(String apelldio) {
-        this.apelldio = apelldio;
+    public void setApellido(String apellido) {
+        this.apellido = apellido;
     }
 
     public String getCorreo() {

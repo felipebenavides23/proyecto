@@ -2,9 +2,15 @@ package daos;
 
 import java.awt.*;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Scanner;
 
+import modelos.modelos_clientes;
+import controladores.controlador_cliente;
+
 public class DAOS_CLIENTE {
+    modelos_clientes cli;
+    controlador_cliente con_cli;
     File bd_clientes = new File("bd/clientes.txt");
 
 
@@ -14,56 +20,60 @@ public class DAOS_CLIENTE {
     public boolean verificar_bd_clientes() {
         try {
             if (bd_clientes.exists()) {
+                con_cli = new controlador_cliente();
                 return true;
             } else {
                 bd_clientes.createNewFile();
                 verificar_bd_clientes();
-
             }
         } catch (Exception ex) {
         }
         return false;
+    }
+
+    public void iniciarcliente() throws FileNotFoundException {
+        BufferedReader leer = new BufferedReader(new FileReader("bd/clientes.txt"));
+        String linea = "";
+        if(con_cli != null)con_cli.elminar();
+
+        try{
+            while ((linea = leer.readLine()) != null){
+                 cli = new modelos_clientes();
+                String [] data = linea.split("-");
+                cli.setId(Integer.parseInt(data[0]));
+                cli.setNombre(data[1]);
+                cli.setApellido(data[2]);
+                cli.setDocumemto(data[3]);
+                cli.setCorreo(data[4]);
+
+                con_cli.agregarclientes(cli);
+            }
+        }catch (Exception ex){}
     }
 
     public boolean verificar_documento(TextField documento) throws FileNotFoundException {
-        BufferedReader leer = new BufferedReader(new FileReader("bd/clientes.txt"));
-        Scanner entrada = new Scanner(new File("bd/clientes.txt"));
-        String linea = "";
-        try {
-            while ((linea = leer.readLine()) != null) {
-                String id_cli = entrada.next();
-                String nombre_cli = entrada.next();
-                String apellido_cli = entrada.next();
-                String documento_cli = entrada.next();
-                String correo_cli = entrada.next();
-                String v_documento = documento.getText();
-                if (documento_cli.equals(v_documento)) {
-                    return true;
-                }
-            }
-        } catch (Exception ex) {
-
-        }
-        return false;
+        return con_cli.confirmar_correo(documento);
     }
 
-    public void validar_id_cliente(TextField nombre, TextField apellido, TextField documento, TextField correo) throws FileNotFoundException {
-        BufferedReader leer = new BufferedReader(new FileReader("bd/clientes.txt"));
-        String linea = "";
-        try {
-            int conteo = 1;
-            while ((linea = leer.readLine()) != null) {
-                conteo = conteo + 1;
-            }
-            crear_cliente(conteo, nombre, apellido, documento, correo);
-        } catch (Exception ex) {
-        }
+    public modelos_clientes gestionar_persona(TextField nombre, TextField apellido, TextField documento, TextField corre){
+
+        int id = con_cli.conteo() + 1;
+        cli = new modelos_clientes();
+        cli.setId(id);
+        cli.setNombre(nombre.getText());
+        cli.setApellido(apellido.getText());
+        cli.setDocumemto(documento.getText());
+        cli.setCorreo(documento.getText());
+
+        return cli;
+
     }
 
-    public void crear_cliente(int id, TextField nombre, TextField apellido, TextField documento, TextField corre) {
+    public void crear_cliente(modelos_clientes cli) {
+
         try {
             BufferedWriter escribir_usuario = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(bd_clientes, true)));
-            escribir_usuario.write(id + "    " + nombre.getText() + "    " + apellido.getText() + "    " + documento.getText() + "     " + corre.getText());
+            escribir_usuario.write(cli.getId() + "-" + cli.getNombre() + "-" + cli.getApellido() + "-" + cli.getDocumemto() + "-" + cli.getCorreo());
             escribir_usuario.write("\n");
             escribir_usuario.close();
         } catch (Exception ex) {
@@ -71,67 +81,38 @@ public class DAOS_CLIENTE {
     }
 
     public String[] lista_documento() throws FileNotFoundException {
-        BufferedReader leer = new BufferedReader(new FileReader("bd/clientes.txt"));
-        Scanner entrada = new Scanner(new File("bd/clientes.txt"));
-        String linea = "";
-        int conteo = 1;
-        int i;
-
-        try {
-            while ((linea = leer.readLine()) != null) {
-                conteo = conteo + 1;
-            }
-        } catch (Exception ex) {
-            System.out.println(ex);
-
-        }
+        verificar_bd_clientes();
+        iniciarcliente();
+        int conteo = con_cli.conteo() + 1;
         String[] lista_doc = new String[conteo];
-        lista_doc[0] = "";
+        int i;
+        lista_doc [0]= "";
         try {
-            for (i = 1; i <= conteo; i++) {
-                String id_cli = entrada.next();
-                String nombre_cli = entrada.next();
-                String apellido_cli = entrada.next();
-                String documento_cli = entrada.next();
-                String correo_cli = entrada.next();
-
-                lista_doc[i] = documento_cli;
-
+            for (i = 0; i <= conteo; i++) {
+                String documento_cli = con_cli.getClientes().get(i).getDocumemto();
+                lista_doc[i+1] = documento_cli;
             }
-
         } catch (Exception ex) {
             System.out.println(ex);
-
         }
-
-
         return lista_doc;
     }
 
     public String[] lista_clientes() throws FileNotFoundException {
-        BufferedReader leer = new BufferedReader(new FileReader("bd/clientes.txt"));
-        Scanner entrada = new Scanner(new File("bd/clientes.txt"));
-        String linea = "";
-        int conteo = 1;
+        verificar_bd_clientes();
+        iniciarcliente();
+        int conteo = con_cli.conteo() + 1;
         int i;
-
-        try {
-            while ((linea = leer.readLine()) != null) {
-                conteo = conteo + 1;
-            }
-        } catch (Exception ex) {
-            System.out.println(ex);
-        }
         String[] lista_cliente = new String[conteo];
-        lista_cliente[0] = "id              nombre              apellido              docuemnto              correo";
+        lista_cliente[0] = "id-nombre-apellido-documento-correo";
         try {
-            for (i = 1; i <= conteo; i++) {
-                String id_cli = entrada.next();
-                String nombre_cli = entrada.next();
-                String apellido_cli = entrada.next();
-                String documento_cli = entrada.next();
-                String correo_cli = entrada.next();
-                lista_cliente[i] = id_cli + "              " + nombre_cli + "              " + apellido_cli + "              " + documento_cli + "              " + correo_cli;
+            for (i = 0; i <= conteo; i++) {
+                int id_cli = con_cli.getClientes().get(i).getId();
+                String nombre_cli = con_cli.getClientes().get(i).getNombre();
+                String apellido_cli = con_cli.getClientes().get(i).getApellido();
+                String documento_cli = con_cli.getClientes().get(i).getDocumemto();
+                String correo_cli = con_cli.getClientes().get(i).getCorreo();
+                lista_cliente[i+1] = id_cli + " - " + nombre_cli + " - " + apellido_cli + " - " + documento_cli + " - " + correo_cli;
             }
         } catch (Exception ex) {
             System.out.println(ex);

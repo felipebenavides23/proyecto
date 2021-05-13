@@ -1,13 +1,25 @@
 package modelos;
 
-public class modelo_citas {
-    private String fecha_cita,placa,motivo;
+import java.util.Date;
 
-    public String getFecha_cita() {
+public class modelo_citas {
+    private String placa,motivo;
+    private Date fecha_cita;
+    private int id;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public Date getFecha_cita() {
         return fecha_cita;
     }
 
-    public void setFecha_cita(String fecha_cita) {
+    public void setFecha_cita(Date fecha_cita) {
         this.fecha_cita = fecha_cita;
     }
 
