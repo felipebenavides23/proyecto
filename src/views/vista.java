@@ -494,7 +494,13 @@ public class vista {
         bo_atras.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                render("listar citas", datos, emptyData);
+                String[] data = new String[0];
+                try {
+                    datos = daos_citas.lista_citas();
+                } catch (FileNotFoundException fileNotFoundException) {
+                    fileNotFoundException.printStackTrace();
+                }
+                render("listar citas", emptyData, datos);
             }
         });
         panel_i1.add(bo_atras);
@@ -637,7 +643,13 @@ public class vista {
         bo_atras.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                render("listar citas", datos, emptyData);
+                String[] data = new String[0];
+                try {
+                    datos = daos_citas.lista_citas();
+                } catch (FileNotFoundException fileNotFoundException) {
+                    fileNotFoundException.printStackTrace();
+                }
+                render("listar citas", emptyData, datos);
             }
         });
 
